@@ -19,7 +19,7 @@ CONFIG_SCHEMA = {
         'default': 'https://api.example.com'
     }
 }
-
+ 
 config = ConfigManager(CONFIG_SCHEMA)
 config.load(r'python\test.json')
 
