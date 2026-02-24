@@ -1,45 +1,8 @@
 "use strict";
 
-/**
- * @typedef {Object} Task
- * @property {string} id
- * @property {string} name
- * @property {() => Promise<any>} execute
- * @property {number} [priority] - Optional: higher number = higher priority
- */
-
-/**
- * @typedef {'completed'|'failed'} TaskStatus
- */
-
-/**
- * @typedef {Object} TaskResult
- * @property {string} id
- * @property {TaskStatus} status
- * @property {any} [result]
- * @property {string} [error]
- * @property {number} duration - milliseconds
- */
-
-/**
- * @typedef {Object} QueueStatus
- * @property {number} pending
- * @property {number} running
- * @property {number} completed
- * @property {number} failed
- */
-
-/**
- * @typedef {Object} TaskQueueOptions
- * @property {number} maxConcurrent
- * @property {boolean} [enablePriority]
- * @property {number} [maxRetries]
- */
 
 class TaskQueue {
-    /**
-     * @param {TaskQueueOptions} options
-     */
+
     constructor(options = {}) {
         if (
             typeof options.maxConcurrent !== "number" ||

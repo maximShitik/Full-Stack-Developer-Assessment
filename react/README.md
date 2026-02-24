@@ -1,77 +1,68 @@
-# Filterable Item List (React)
+# React — Filterable Item List
 
 ## Overview
+This section implements a reusable `FilterableList` component in React.
 
-This project implements a reusable `FilterableList` component built with React.
-
-It provides filtering, sorting, URL state persistence and keyboard navigation.
-
-The implementation focuses on:
-- Clean architecture
-- Separation of concerns
-- Reusability
-- Accessibility
-
----
-
-## Features
-
-### Core Requirements
-- Display items as cards
-- Case-insensitive search by title
-- Category filter (dropdown)
-- Status filter (multi-select)
-- Sort by:
-  - Title (A–Z / Z–A)
-  - Date (Newest / Oldest)
-- Loading state (spinner)
-- Empty state message
-- Responsive layout (grid → single column on mobile)
-
-### Bonus Implemented
-- Debounced search
-- URL query parameter persistence
-- Keyboard navigation (Arrow keys + Enter/Space)
+It displays items as cards and supports filtering + sorting, with additional UX bonuses (debounced search, URL persistence, and keyboard navigation).
 
 ---
 
 ## Architecture
 
-The project separates responsibilities into three layers:
+### 1. Components (UI only)
+- **`FilterableList`** — orchestrates state + renders the list
+- **`FilterBar`** — renders filter controls (search/category/status/sort)
+- **`ItemCard`** — renders a single item as a clickable card button
 
-### 1. Components
-UI rendering only.
-- `FilterableList`
-- `FilterBar`
-- `ItemCard`
+### 2. Hooks (reusable behavior)
+- **`useDebouncedValue`** — debounces search input to avoid filtering on every keystroke
+- **`useUrlSyncFilters`** — syncs filter state ↔ URL query params (shareable links)
+- **`useKeyboardListNavigation`** — accessible keyboard navigation (roving tabindex)
 
-### 2. Hooks
-Reusable stateful logic:
-- `useDebouncedValue`
-- `useUrlSyncFilters`
-- `useKeyboardListNavigation`
+### 3. Utils (pure functions)
+- **`getCategories`** — extract unique categories
+- **`filterItems`** — apply search/category/status filtering (pure, testable)
+- **`sortItems`** — sort by title/date (pure, testable)
 
-### 3. Utils
-Pure data-processing functions:
-- `getCategories`
-- `filterItems`
-- `sortItems`
+This separation keeps rendering simple, logic testable, and behavior reusable.
 
-This separation improves readability, maintainability and testability.
+---
+
+## Features
+
+### Core
+- Items displayed as cards
+- Case-insensitive search by title
+- Category dropdown filter
+- Status multi-select filter
+- Sort:
+  - Title (A–Z / Z–A)
+  - Date (Newest / Oldest)
+- Loading state (spinner)
+- Empty state message
+- Responsive layout
+
+### Bonus
+- Debounced search
+- URL query parameter persistence
+- Keyboard navigation (Arrow keys + Enter/Space)
+
+### Not Implemented
+- UI “smoothing” / animations
 
 ---
 
 ## Assumptions
-
-- Items are provided via props.
-- `createdAt` is a valid ISO date string.
-- Filtering and sorting are performed client-side.
-- No external animation libraries are used.
+- Items are passed via props (`items`)
+- `createdAt` is a valid ISO date string
+- Filtering and sorting are done client-side
+- Using **JSX** is allowed for this assessment
 
 ---
 
-## Run
-
-cd to the react-assessment foler
+## How to Run
+```bash
+cd react
 npm install
 npm run dev
+npm test

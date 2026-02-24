@@ -47,7 +47,7 @@ class ConfigManager():
 
 
 
-    def get(self,key: str, default=None)-> None:
+    def get(self,key: str, default=None)-> any:
         self._key_in_schema(key)
 
         if key in self.values:
