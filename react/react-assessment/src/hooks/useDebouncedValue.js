@@ -1,3 +1,11 @@
+/**
+ * useDebouncedValue
+ * -----------------
+ * Returns a debounced version of a value.
+ * Used to avoid triggering expensive operations
+ * (like filtering) on every keystroke.
+ */
+
 import { useEffect,useState } from "react";
 
 

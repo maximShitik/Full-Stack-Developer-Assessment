@@ -1,3 +1,14 @@
+/**
+ * useUrlSyncFilters
+ * -----------------
+ * Synchronizes filter state with URL query parameters.
+ *
+ * - On mount: reads values from URL into state
+ * - On change: updates URL without page reload
+ *
+ * Enables sharing filtered views via link.
+ */
+
 import { useEffect, useState } from "react";
 
 export function useUrlSyncFilters({

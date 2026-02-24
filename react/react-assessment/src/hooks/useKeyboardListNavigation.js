@@ -1,3 +1,14 @@
+/**
+ * useKeyboardListNavigation
+ * --------------------------
+ * Implements keyboard navigation (roving tabindex pattern)
+ * for accessible list navigation.
+ *
+ * Supports:
+ * - Arrow keys (move focus)
+ * - Enter / Space (trigger item click)
+ */
+
 import { useEffect, useRef, useState } from "react";
 
 export function useKeyboardListNavigation(items, onItemClick) {

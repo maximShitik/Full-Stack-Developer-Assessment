@@ -1,3 +1,16 @@
+/**
+ * listUtils.js
+ * -------------
+ * Pure utility functions for list processing.
+ * These functions contain no React logic and can be reused
+ * outside of React components.
+ *
+ * Responsibilities:
+ * - Extract unique categories
+ * - Filter items based on search and selected filters
+ * - Sort items by selected sort option
+ */
+
 export function getCategories(items) {
   return Array.from(new Set(items.map((item) => item.category)));
 }
