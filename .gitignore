@@ -1,55 +1,52 @@
-# Virtual environment
-venv/
-.env/
-.venv/
-
-# Python cache
+# =========================
+# Python
+# =========================
 __pycache__/
 *.pyc
 *.pyo
+*.log
+*.db
+*.sqlite3
+instance/
 
-# OS files
-.DS_Store
-Thumbs.db
+.venv/
+venv/
+.env
 
-# IDE
-.vscode/
-.idea/
-
-# Test cache
 .pytest_cache/
-
-# Coverage
 .coverage
 htmlcov/
 
-# dependencies
+# =========================
+# Node / React
+# =========================
 node_modules/
-
-# build output
 dist/
 build/
+.vite/
 
-# environment variables
-.env
+coverage/
+
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# Environment files
+# =========================
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# editor / IDE
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
 .idea/
 
-# coverage
-coverage/
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
