@@ -18,7 +18,7 @@ function App() {
   return (
     <div style={{ minHeight: "100vh", padding: 20 }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <h2 style={{ marginTop: 0 }}>Filterable List</h2>
+        
 
         <FilterableList
           items={sampleItems}

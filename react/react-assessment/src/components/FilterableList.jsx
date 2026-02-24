@@ -52,15 +52,11 @@ function FilterableList({ items, loading = false, onItemClick }) {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="fl-spinner-wrapper">
-        <div className="fl-spinner"></div>
-      </div>
-    );
-  }
 
-  return (
+return (
+  <>
+    <h2 className="fl-h2">Filterable List</h2>
+
     <div className="fl-container">
       <FilterBar
         searchText={searchText}
@@ -78,7 +74,12 @@ function FilterableList({ items, loading = false, onItemClick }) {
         Showing {filteredItems.length} of {items.length} items
       </div>
 
-      {sortedItems.length === 0 ? (
+      {/* 👇 כאן שמים את הספינר רק במקום הרשימה */}
+      {loading ? (
+        <div className="fl-spinner-wrapper">
+          <div className="fl-spinner"></div>
+        </div>
+      ) : sortedItems.length === 0 ? (
         <div style={{ marginTop: 20 }}>No items to display.</div>
       ) : (
         <div className="fl-grid" role="list" onKeyDown={nav.onKeyDown}>
@@ -93,7 +94,8 @@ function FilterableList({ items, loading = false, onItemClick }) {
         </div>
       )}
     </div>
-  );
+  </>
+);
 }
 
 export default FilterableList;
