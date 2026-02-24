@@ -1,6 +1,5 @@
-====================================================
 Full-Stack Developer Assessment (Root)
-====================================================
+
 
 Overview:
 Three independent sections:
@@ -17,9 +16,7 @@ Notes:
 - 2–3 unit tests per task.
 - No node_modules, virtualenv, or build artifacts included.
 
-====================================================
-Python — ConfigManager (Schema-Driven)
-====================================================
+Python - ConfigManager (Schema-Driven)
 
 Overview:
 A schema-driven configuration manager.
@@ -44,9 +41,8 @@ pip install -r requirements.txt
 pytest -q
 
 
-====================================================
 JavaScript — Node Task
-====================================================
+
 
 Overview:
 avaScript implementation demonstrating clean structure,
@@ -69,9 +65,8 @@ npm test
 npm run dev
 
 
-====================================================
-React — Filterable Item List
-====================================================
+React - Filterable Item List
+
 
 Overview:
 Reusable FilterableList component with filtering,
