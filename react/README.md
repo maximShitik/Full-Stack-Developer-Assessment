@@ -66,3 +66,7 @@ cd react
 npm install
 npm run dev
 npm test
+
+## Tests
+```bash
+npm test
