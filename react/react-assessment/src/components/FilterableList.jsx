@@ -1,123 +1,48 @@
 import FilterBar from "./FilterBar";
 import ItemCard from "./ItemCard";
-import { useState, useEffect ,useRef } from "react";
+import { useState } from "react";
 import "./FilterableList.css";
 
-const wait_time = 700;
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { useUrlSyncFilters } from "../hooks/useUrlSyncFilters";
+import { useKeyboardListNavigation } from "../hooks/useKeyboardListNavigation";
+import { getCategories, filterItems, sortItems } from "../utils/listUtils";
 
-
+const WAIT_TIME_MS = 700;
 
 function FilterableList({ items, loading = false, onItemClick }) {
   const [searchText, setSearchText] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatuses, setSelectedStatuses] = useState([]);
   const [sortOption, setSortOption] = useState("date_newest");
-  const [debouncedSearchtext, setDebouncedSearchtext] = useState(searchText);
-  const [didInitFromUrl, setDidInitFromUrl] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const itemRefs = useRef([]);
 
+  // Debounce search
+  const debouncedSearchText = useDebouncedValue(searchText, WAIT_TIME_MS);
 
-
-
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-
-    const search = params.get("search") || "";
-    const category = params.get("category") || "";
-    const status = params.get("status");
-    const sort = params.get("sort") || "date_newest";
-
-    setSearchText(search);
-    setSelectedCategory(category);
-    setSortOption(sort);
-
-    if (status) {
-      setSelectedStatuses(status.split(","));
-    }
-
-    setDidInitFromUrl(true);
-  }, []);
-
-  useEffect(() => {
-    if (!didInitFromUrl) return;
-
-    const params = new URLSearchParams();
-
-    if (searchText) params.set("search", searchText);
-    if (selectedCategory) params.set("category", selectedCategory);
-    if (selectedStatuses.length > 0)
-      params.set("status", selectedStatuses.join(","));
-    if (sortOption) params.set("sort", sortOption);
-
-    const newUrl = `${window.location.pathname}?${params.toString()}`;
-    window.history.replaceState({}, "", newUrl);
-  }, [
-    didInitFromUrl,
+  // URL sync (bonus)
+  useUrlSyncFilters({
     searchText,
     selectedCategory,
     selectedStatuses,
     sortOption,
-  ]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchtext(searchText);
-    }, wait_time);
-
-    return () => clearTimeout(timer);
-  }, [searchText]);
-
-  const categories = Array.from(new Set(items.map((item) => item.category)));
-
-  const filtredItems = items.filter((item) => {
-    const matchesSearch = item.title
-      .toLowerCase()
-      .includes(debouncedSearchtext.trim().toLowerCase());
-
-    const matchesCategory =
-      selectedCategory === "" || item.category === selectedCategory;
-
-    const matchesStatus =
-      selectedStatuses.length === 0 || selectedStatuses.includes(item.status);
-
-    return matchesSearch && matchesCategory && matchesStatus;
+    setSearchText,
+    setSelectedCategory,
+    setSelectedStatuses,
+    setSortOption,
   });
 
-  const sortedItems = [...filtredItems];
+  const categories = getCategories(items);
 
-  sortedItems.sort((a, b) => {
-    if (sortOption === "title_asc") return a.title.localeCompare(b.title);
-    if (sortOption === "title_desc") return b.title.localeCompare(a.title);
-
-    const aTime = Date.parse(a.createdAt);
-    const bTime = Date.parse(b.createdAt);
-
-    if (sortOption === "date_newest") return bTime - aTime;
-    return aTime - bTime;
+  const filteredItems = filterItems(items, {
+    searchText: debouncedSearchText,
+    selectedCategory,
+    selectedStatuses,
   });
 
-    function moveFocus(nextIndex) {
+  const sortedItems = sortItems(filteredItems, sortOption);
 
-  const clamped = Math.max(0, Math.min(nextIndex, sortedItems.length - 1));
-  setActiveIndex(clamped);
-  const el = itemRefs.current[clamped];
-  if (el) el.focus();
-}
-
-
-  useEffect(() => {
-  setActiveIndex(0);
-}, [sortedItems.length]);
-
-  if (loading) {
-    return (
-      <div className="fl-spinner-wrapper">
-        <div className="fl-spinner"></div>
-      </div>
-    );
-  }
+  // Keyboard navigation (bonus)
+  const nav = useKeyboardListNavigation(sortedItems, onItemClick);
 
   function toggleStatus(status) {
     if (selectedStatuses.includes(status)) {
@@ -125,6 +50,14 @@ function FilterableList({ items, loading = false, onItemClick }) {
     } else {
       setSelectedStatuses([...selectedStatuses, status]);
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="fl-spinner-wrapper">
+        <div className="fl-spinner"></div>
+      </div>
+    );
   }
 
   return (
@@ -140,44 +73,23 @@ function FilterableList({ items, loading = false, onItemClick }) {
         sortOption={sortOption}
         onSortOptionChange={setSortOption}
       />
+
       <div className="fl-inner-container">
-        Showing {filtredItems.length} of {items.length} items
+        Showing {filteredItems.length} of {items.length} items
       </div>
 
       {sortedItems.length === 0 ? (
-        <div style={{ marginTop: 20 }}>No items to Display.</div>
+        <div style={{ marginTop: 20 }}>No items to display.</div>
       ) : (
-        <div
-  className="fl-grid"
-  role="list"
-  onKeyDown={(e) => {
-    if (sortedItems.length === 0) return;
-
-    const isArrow =
-      e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowDown" || e.key === "ArrowUp";
-
-    if (!isArrow && e.key !== "Enter" && e.key !== " ") return;
-
-    e.preventDefault();
-
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") moveFocus(activeIndex + 1);
-    if (e.key === "ArrowLeft" || e.key === "ArrowUp") moveFocus(activeIndex - 1);
-
-    if (e.key === "Enter" || e.key === " ") {
-      onItemClick?.(sortedItems[activeIndex]);
-    }
-  }}
->
+        <div className="fl-grid" role="list" onKeyDown={nav.onKeyDown}>
           {sortedItems.map((item, index) => (
-  <ItemCard
-    key={item.id}
-    item={item}
-    onClick={() => onItemClick?.(item)}
-    tabIndex={index === activeIndex ? 0 : -1}
-    refCallback={(el) => (itemRefs.current[index] = el)}
-    role="listitem"
-  />
-))}
+            <ItemCard
+              key={item.id}
+              item={item}
+              onClick={() => onItemClick?.(item)}
+              {...nav.getItemProps(index)}
+            />
+          ))}
         </div>
       )}
     </div>
