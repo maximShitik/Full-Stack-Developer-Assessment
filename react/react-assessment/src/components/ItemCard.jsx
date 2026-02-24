@@ -1,6 +1,12 @@
-function ItemCard({ key ,item, onClick }) {
-
-    return (<button className="fl-card" onClick={onClick} type="button">
+function ItemCard({ item, onClick, tabIndex = -1, refCallback, role }) {
+    return (  <button
+    className="fl-card"
+    onClick={onClick}
+    type="button"
+    tabIndex={tabIndex}
+    ref={refCallback}
+    role={role}
+  >
         <div className="fl-title">{item.id}. {item.title}</div>
 
         <span
