@@ -1,0 +1,127 @@
+import json
+
+
+
+class ConfigManager():
+    def __init__(self,schema):
+        self.schema = schema
+        self.values = {}
+
+        
+
+
+    def load(self,filepath: str):
+        #cheks the keys and value
+        try:
+           with open(filepath,"r") as file:
+               data = json.load(file)
+        except FileNotFoundError:
+           return
+        if not isinstance(data, dict):
+            raise ValueError("Invalid config file: expected a JSON object (dictionary) at the top level")
+
+        new_values = {}
+        for key, value in data.items():
+            self._key_in_schema(key)
+            self._value_validate(key,value)
+            new_values[key] = value
+        
+        self.values = new_values
+
+
+    def save(self,filepath: str):
+        # gets all the keys from get_all to also set the deafults
+        all_values = self.get_all()
+
+        # saves the curerent config to the file
+        with open(filepath, "w", encoding="utf-8") as file:
+            json.dump(all_values, file, ensure_ascii=False, indent=2)
+
+
+
+    def get(self,key: str, default=None):
+        #cheks if the key is valid if not raises exepotion
+        self._key_in_schema(key)
+
+        if key in self.values:
+            return self.values[key]
+        
+        if default is not None:
+            return default
+        
+        return self._schema_default(key)
+           
+
+
+
+    def set(self,key: str, value):
+        #cheks if the key is valid
+        # cheks if the value is valid
+        # if its choices cheks in the list
+        self._key_in_schema(key)
+
+        self._value_validate(key,value)
+
+        self.values[key] = value
+
+
+    def get_all(self):
+        #returns all the keys from schema
+        #cheks if the keis value if not deafult
+        result = {}
+        for key in self.schema.keys():
+            if key in self.values.keys():
+                result[key] = self.values[key]
+            else:
+                result[key] = self._schema_default(key)
+        return result
+
+    def reset(self,key):
+        #cheks if the key is valid
+        #deletes the valeu and sets deafult
+        self._key_in_schema(key)
+        self.values[key] = self._schema_default(key)
+
+
+
+    # Helper functions 
+
+    def _key_in_schema(self,key):
+        if key not in self.schema:
+            raise ValueError(f"Unknown configuration key: '{key}'")
+        
+
+    def _schema_default(self,key):
+        schema_key = self.schema.get(key,{})
+        return schema_key.get("default",None)
+
+
+
+    # validates the value type
+    def _value_validate(self, key: str, value):
+        setting_key = self.schema[key]
+        setting_type = setting_key.get("type")
+
+        if setting_type == "bool" :
+            if not isinstance(value,bool):
+             raise ValueError( f"Invalid value for '{key}': expected boolean, got {type(value).__name__}")
+
+        elif setting_type == "string":
+            if not isinstance(value,str):
+                raise ValueError( f"Invalid value for '{key}': expected string, got {type(value).__name__}")
+        
+        elif setting_type == 'int':
+            if isinstance(value, bool) or not isinstance(value, int):
+                raise ValueError( f"Invalid value for '{key}': expected int, got {type(value).__name__}")
+        
+        elif setting_type == "choice":
+            choices = setting_key.get("choices")
+
+
+            if value not in choices:
+                raise ValueError(f"Invalid value for '{key}': expected one of {choices}, got {value!r}")
+            
+        else:
+            raise ValueError(
+                f"Invalid schema for '{key}': unknown type {setting_type!r}. "
+                "Supported: 'bool', 'string', 'int', 'choice'.")
