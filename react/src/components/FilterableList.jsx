@@ -74,7 +74,6 @@ return (
         Showing {filteredItems.length} of {items.length} items
       </div>
 
-      {/* 👇 כאן שמים את הספינר רק במקום הרשימה */}
       {loading ? (
         <div className="fl-spinner-wrapper">
           <div className="fl-spinner"></div>
